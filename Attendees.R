@@ -32,13 +32,13 @@ attendees<-read_sheet("https://docs.google.com/spreadsheets/d/1uqkViNAyUZ6eEYjXZ
     str_detect(tolower(Zooplankter), fixed("eucalanus californicus")) ~ "Eucalanus californicus",
     str_detect(tolower(Zooplankter), fixed("copepod")) ~ "Copepoda",
     Zooplankter%in%c("Daphnia pulex", "Ceriodaphnia",  "Daphnia melanica", "Daphnia magna")~ Zooplankter,
-    Zooplankter%in%c("Must I pick just one...", "na", "da", "All of them!")~ NA_character_,
+    Zooplankter%in%c("Must I pick just one...", "na", "da", "All of them!", "N/A")~ NA_character_,
     str_detect(tolower(Zooplankter), fixed("daphnia")) ~ "Daphnia",
     str_detect(tolower(Zooplankter), fixed("zoe")) | Zooplankter=="Porcelain crab larva"~ "Zoea",
     str_detect(tolower(Zooplankter), fixed("megalopa")) ~ "Megalopa",
     str_detect(tolower(Zooplankter), fixed("michelle")) ~ "Michelle Avila",
     str_detect(tolower(Zooplankter), fixed("kimmerer")) ~ "Wim Kimmerer",
-    
+    str_detect(tolower(Zooplankter), fixed("ctenoph")) | Zooplankter=="comb jelly"~ "Ctenophora",
     TRUE ~ Zooplankter
   ))%>%
   group_by(Zooplankter)%>%
@@ -47,13 +47,14 @@ attendees<-read_sheet("https://docs.google.com/spreadsheets/d/1uqkViNAyUZ6eEYjXZ
 
 p<-ggplot(filter(attendees, !is.na(Zooplankter)), aes(x=reorder(Zooplankter, -N), fill=N))+
   geom_bar()+
-  geom_label_repel(data=filter(attendees, !is.na(Zooplankter) & N>1)%>%select(N, Zooplankter)%>%distinct(), aes(y=N, label=Zooplankter, color=if_else(N<=4, TRUE, FALSE)),
-                   min.segment.length = 100)+
+  #geom_label_repel(data=filter(attendees, !is.na(Zooplankter) & N>1)%>%select(N, Zooplankter)%>%distinct(), aes(y=N, label=Zooplankter, color=if_else(N<=4, TRUE, FALSE)),
+  #                 min.segment.length = 100)+
+  #geom_text(data=filter(attendees, !is.na(Zooplankter) & N>1)%>%select(N, Zooplankter)%>%distinct(), aes(y=N/2, label=Zooplankter, color=if_else(N<=4, TRUE, FALSE)), angle=90)+
   coord_cartesian(expand = FALSE)+
   scale_fill_viridis_c()+
   scale_color_manual(values=c("black", "white"))+
   xlab("Favorite zooplankter")+
   theme_bw()+
-  theme(axis.text.x=element_text(angle=45, hjust=1), legend.position="none", plot.margin = margin(l=45, t=10, r=10, b=10))
+  theme(text=element_text(size=20), axis.text.x=element_text(angle=45, hjust=1), legend.position="none", plot.margin = margin(l=90, t=10, r=10, b=10))
 
-ggsave(p, filename="Favoriate zooplankters.png", device="png", width=10, height=8, units="in")  
+ggsave(p, filename="Favoriate zooplankters.png", device="png", width=18, height=8, units="in")  
