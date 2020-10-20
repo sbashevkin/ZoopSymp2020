@@ -57,4 +57,16 @@ p<-ggplot(filter(attendees, !is.na(Zooplankter)), aes(x=reorder(Zooplankter, -N)
   theme_bw()+
   theme(text=element_text(size=20), axis.text.x=element_text(angle=45, hjust=1), legend.position="none", plot.margin = margin(l=90, t=10, r=10, b=10))
 
-ggsave(p, filename="Favoriate zooplankters.png", device="png", width=18, height=8, units="in")  
+ggsave(p, filename="Favorite zooplankters_all.png", device="png", width=18, height=8, units="in")  
+
+p2<-ggplot(filter(attendees, !is.na(Zooplankter) & N>1)%>%select(N, Zooplankter)%>%distinct(), aes(x=reorder(Zooplankter, N), fill=N, y=N))+
+  geom_bar(stat="identity")+
+  geom_text(aes(y=N/2, label=Zooplankter, color=if_else(N<=4, TRUE, FALSE)), size=6)+
+  scale_fill_viridis_c()+
+  scale_color_manual(values=c("black", "white"))+
+  ylab("Count")+
+  xlab("Favorite zooplankter")+coord_flip(expand = FALSE)+
+  theme_bw()+
+  theme(text=element_text(size=20), axis.text.y=element_blank(), legend.position="none")
+
+ggsave(p2, filename="Favorite zooplankters_2 more more votes.png", device="png", width=14, height=8, units="in")  
