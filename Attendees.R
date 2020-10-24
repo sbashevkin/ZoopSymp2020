@@ -21,8 +21,9 @@ attendees<-read_sheet("https://docs.google.com/spreadsheets/d/1uqkViNAyUZ6eEYjXZ
                             `Sheldon J. Plankton (aka Plankton) from SpongeBob`= "Sheldon J. Plankton",
                             `Any ichthyoplanker!`="Ichthyoplankton", `Daphnia Magna`="Daphnia magna",
                             Jellyfish="Cnidaria", cnidarians="Cnidaria", isopods="Isopoda",
-                            `Daphia pulex bro`="Daphnia pulex"),
+                            `Daphia pulex bro`="Daphnia pulex", `copepod Calinus pacificus!`="Calinus pacificus"),
     Zooplankter=case_when(
+    Zooplankter%in%c("Daphnia pulex", "Ceriodaphnia",  "Daphnia melanica", "Daphnia magna", "Bosmina longirostris")~ Zooplankter,
     str_detect(tolower(Zooplankter), fixed("cladocera")) ~ "Cladocera",
     str_detect(tolower(Zooplankter), fixed("eurytemora")) ~ "Eurytemora affinis",
     str_detect(tolower(Zooplankter), fixed("bosmina")) ~ "Bosmina",
@@ -31,7 +32,6 @@ attendees<-read_sheet("https://docs.google.com/spreadsheets/d/1uqkViNAyUZ6eEYjXZ
     str_detect(tolower(Zooplankter), fixed("pontella princeps")) ~ "Pontella princeps",
     str_detect(tolower(Zooplankter), fixed("eucalanus californicus")) ~ "Eucalanus californicus",
     str_detect(tolower(Zooplankter), fixed("copepod")) ~ "Copepoda",
-    Zooplankter%in%c("Daphnia pulex", "Ceriodaphnia",  "Daphnia melanica", "Daphnia magna")~ Zooplankter,
     Zooplankter%in%c("Must I pick just one...", "na", "da", "All of them!", "N/A")~ NA_character_,
     str_detect(tolower(Zooplankter), fixed("daphnia")) ~ "Daphnia",
     str_detect(tolower(Zooplankter), fixed("zoe")) | Zooplankter=="Porcelain crab larva"~ "Zoea",
@@ -62,6 +62,7 @@ ggsave(p, filename="Favorite zooplankters_all.png", device="png", width=18, heig
 p2<-ggplot(filter(attendees, !is.na(Zooplankter) & N>1)%>%select(N, Zooplankter)%>%distinct(), aes(x=reorder(Zooplankter, N), fill=N, y=N))+
   geom_bar(stat="identity")+
   geom_text(aes(y=N/2, label=Zooplankter, color=if_else(N<=4, TRUE, FALSE)), size=6)+
+  scale_y_continuous(breaks=c(0,3,6,9))+
   scale_fill_viridis_c()+
   scale_color_manual(values=c("black", "white"))+
   ylab("Count")+
@@ -69,4 +70,4 @@ p2<-ggplot(filter(attendees, !is.na(Zooplankter) & N>1)%>%select(N, Zooplankter)
   theme_bw()+
   theme(text=element_text(size=20), axis.text.y=element_blank(), legend.position="none")
 
-ggsave(p2, filename="Favorite zooplankters_2 more more votes.png", device="png", width=14, height=8, units="in")  
+ggsave(p2, filename="Favorite zooplankters_2 or more votes.png", device="png", width=15, height=8, units="in")  
